@@ -8,6 +8,7 @@ Designing my own tree data structure means we can have each line of the log be d
 Parsing the data, I created a simple regular expression to capture groups within the line. 
 
 Visualization Library Considerations
+
 ETE2
 - Appears to be inflexible with the data that can be represented in a node. We can't have nodes pointing to the custom node structure generated for the exercise.
 
@@ -19,6 +20,9 @@ Multiple possibilities with generating a tree using the networkx library. Defini
 Todo
   -Export tree to dot file
   -IdaPython implementation
+
+Bugs
+  - Creation of a new roottree creates an empty node. Probably because of how inserter is initialized per root
 
 Do we create a list of trees, or attach all trees to a single root
   -Consideration of difficulty for clipping subtree. Not really an issue because we just return the subroot.
