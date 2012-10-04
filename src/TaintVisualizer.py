@@ -68,14 +68,14 @@ class Inserter(object):
     if (depth > self.depth):
       roottree.add(newNode)
       if self.node.edgeann is not None:
-        roottree.add_edge(self.node, newNode, ann=self.node.edgeann)
+        roottree.add_edge(self.node, newNode, anno=self.node.edgeann)
       else: 
         roottree.add_edge(self.node, newNode)
       self.depth = depth
     elif(depth == self.depth):
       roottree.add(newNode)
       if self.node.edgeann is not None:
-        roottree.add_edge(roottree.pred(self.node), newNode, ann=self.node.edgeann)
+        roottree.add_edge(roottree.pred(self.node), newNode, anno=roottree.pred(self.node).edgeann)
       else: 
         roottree.add_edge(roottree.pred(self.node), newNode)
       #self.node.parent.add(newNode)
@@ -85,7 +85,7 @@ class Inserter(object):
         parent = roottree.pred(parent)
       roottree.add(newNode)
       if self.node.edgeann is not None:
-        roottree.add_edge(parent, newnode, ann=self.node.edgeann)
+        roottree.add_edge(parent, newnode, anno=parent.edgeann)
       else:
         roottree.add_edge(parent, newnode)
       self.depth = depth
@@ -104,7 +104,7 @@ if __name__ == '__main__':
   args = vars(parser.parse_args())
   print args['taint']
   inFile = open(args['taint'])
-  global roottree
+  #global roottree
   roottree.add_node("ROOT")
   with open(inFile, 'r') as f:
     for line in f:
@@ -117,3 +117,13 @@ if __name__ == '__main__':
       else:
         nodedata = line[depth:]
         inserter(nodedata, depth)
+  nx.write_dot(roottree, 'test.dot')
+
+  plt.title("taint_treex")
+  pos=nx.graphviz_layout(roottree,prog='dot')
+  #nx.draw_networkx_nodes(roottree, pos, node_size=1200, node_shape='o', node_color="0.75')
+  #nx.draw_networkx_edges(roottree, width=2, edge_color='b')
+  #nx.draw_networkx_labels(roottree, fontsize=2, labelloc='c')
+  #nx.draw_networkx_edge_labels(roottree, pos, labelloc='c')
+  nx.draw(roottree,pos,arrows=False)
+  plt.savefig('taint_tree.png')
