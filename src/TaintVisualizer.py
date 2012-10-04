@@ -89,7 +89,7 @@ class Inserter(object):
       for i in range(0, self.depth - depth):
         parent = roottree.predecessors(parent)[0]
       roottree.add_node(newNode)
-      if self.node.edgeann is not None:
+      if parent.edgeann is not None:
         roottree.add_edge(parent, newNode, anno=parent.edgeann)
       else:
         roottree.add_edge(parent, newNode)
@@ -111,7 +111,7 @@ if __name__ == '__main__':
   #global roottree
   roottree.add_node("ROOT")
   f = open(args['taint'], 'r')
-  inserter = Inserter(None)
+  inserter = None
   for line in f:
     line = line.rstrip('\n')
     depth = re.match('\t*', line).group(0).count('\t')
