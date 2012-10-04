@@ -17,15 +17,18 @@ class Node(object):
     child.parent = self
 
   def extract_data(s):
-    #For now, the type isn't split off
-    #(P<type>['reg'|'mem']
+    #>>> setup = ur"import re; regex =re.compile("\[(?P<uuid>\d+)\](?P<type>(reg|mem))_(?P<name ...
+    #>>> t = timeit.Timer('regex.search(string)',setup)
+    #>>> t.timeit(10000)
+    #0.0240871906281
+    #
     pattern = re.compile(r"""
-                            \[(?P<uuid>(\d)+)\]
+                            \[(?P<uuid>\d+)\]
                             (?P<type>(reg|mem))
                             _(?P<name>\w+)
                             \[(?P<byteindex>[\d:-]+)\]
                             \[(?P<threadids>[\d:-]+)\]
-                            (\<-(?P<edge>(.*?)?))*
+                            (\<-(?P<edge>.*?))*
                               """, re.VERBOSE)
 #
 # insert a node into a tree at a specific depth (tab) level
