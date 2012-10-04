@@ -28,6 +28,9 @@ class Node(object):
     self.threadids = m.group('threadids')
     self.edgeann = m.group('edgeann')
 
+  def __str__(self):
+    return self.uuid
+
   def extract_data(s):
     #>>> setup = ur"import re; regex =re.compile("\[(?P<uuid>\d+)\](?P<type>(reg|mem))_(?P<name ...
     #>>> t = timeit.Timer('regex.search(string)',setup)
@@ -119,14 +122,25 @@ if __name__ == '__main__':
     else:
       nodedata = line[depth:]
       inserter(nodedata, depth)
-  ##nx.write_dot(roottree, 'test.dot')
   plt.title("taint_treex")
-  nx.draw_networkx(roottree)
+  pos = nx.spring_layout(roottree)
+  ##nx.write_dot(roottree, 'test.dot')
+  #nx.draw_networkx(roottree)
   ##pos=nx.graphviz_layout(roottree,prog='dot')
-  #nx.draw_networkx_nodes(roottree, pos, node_size=1200, node_shape='o', node_color="0.75')
-  #nx.draw_networkx_edges(roottree, width=2, edge_color='b')
-  #nx.draw_networkx_labels(roottree, fontsize=2, labelloc='c')
-  #nx.draw_networkx_edge_labels(roottree, pos, labelloc='c')
-  ##nx.draw(roottree,pos,arrows=False)
+  ##pos=nx.graphviz_layout(roottree,prog='dot')
+  ######NODES######
+  nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='white')
+  ######EDGES######
+  nx.draw_networkx_edges(roottree, pos, width=6, alpha=0.5, edge_color='black')
+  ######LABELS######
+  nx.draw_networkx_labels(roottree, pos, font_size=10, font_family='sans-serif')
+  ##nx.draw_networkx_nodes(roottree, pos=nx.spring_layout(roottree), node_size=1200, node_shape='o', node_color='0.75')
+  ##nx.draw_networkx_edges(roottree, pos=nx.spring_layout(roottree), width=2, edge_color='b')
+  ##nx.draw_networkx_labels(roottree, pos=nx.spring_layout(roottree), fontsize=2, labelloc='c')
+  ###labels = dict((n,d['anno']) for n,d in roottree.nodes(data=True))
+  ###print labels
+  nx.draw_networkx_edge_labels(roottree, pos, font_size=6, labelloc='c')
+  ##nx.draw(roottree,pos=nx.spring_layout(roottree),labels=True, arrows=False)
+  plt.axis('off')
   plt.savefig('taint_tree.png')
   plt.show()
