@@ -1,8 +1,0 @@
-strict graph G3 {
-	graph [label=G3];
-	node [color=red,
-		shape=circle,
-		style=filled
-	];
-	0 -- 1;
-}

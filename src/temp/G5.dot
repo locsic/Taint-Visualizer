@@ -1,9 +1,0 @@
-strict graph G5 {
-	graph [label=G5];
-	node [color=red,
-		shape=circle,
-		style=filled
-	];
-	0;
-	1 -- 2;
-}
