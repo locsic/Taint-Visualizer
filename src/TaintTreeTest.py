@@ -1,7 +1,7 @@
 import re
 import TaintTree
 
-with open(r'0.txt', 'r') as f:
+with open(r'1.txt', 'r') as f:
   tree = TaintTree.Node(f.readline().rstrip('\n'))
   inserter = TaintTree.Inserter(tree)
 
