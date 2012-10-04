@@ -1,0 +1,12 @@
+strict graph G19 {
+	graph [label=G19];
+	node [color=red,
+		shape=circle,
+		style=filled
+	];
+	0;
+	1;
+	2;
+	3;
+	4;
+}

@@ -1,0 +1,10 @@
+strict graph G14 {
+	graph [label=G14];
+	node [color=red,
+		shape=circle,
+		style=filled
+	];
+	0 -- 3;
+	0 -- 1;
+	1 -- 2;
+}
