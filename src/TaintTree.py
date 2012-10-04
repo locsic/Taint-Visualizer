@@ -5,10 +5,11 @@ import re
 class Node(object):
   def __init__(self, uuid):
     self.uuid = uuid
-    self.parent = None
-    self.typ = None
-    self.byte_in = None
-    self.thread_id = None
+    self.parent = None #Legacy - Delete
+    self.typ = None #Check and see if type is a reserved word
+    self.name = None
+    self.byteindex = None
+    self.threadids = None
     self.edge_ann = None
     self.children = [] #Legacy
 
@@ -28,8 +29,15 @@ class Node(object):
                             _(?P<name>\w+)
                             \[(?P<byteindex>[\d:-]+)\]
                             \[(?P<threadids>[\d:-]+)\]
-                            (\<-(?P<edge>.*?))*
+                            (\<-(?P<edgeann>.*?))*
                               """, re.VERBOSE)
+    m = pattern.search(s)
+    self.uuid = m.group('uuid')
+    self.typ = m.group('typ')
+    self.name = m.group('name')
+    self.byte_in = m.group('byteindex')
+    self.threadids = m.group('threadids')
+    self.edgeann = m.group('edgeann')
 #
 # insert a node into a tree at a specific depth (tab) level
 #

@@ -1,10 +1,8 @@
-__author__ = 'Loc Nguyen'                                                                                                                                                                   
-__contact__ = 'locvnguy@gmail.com'      
+__author__ = 'Loc Nguyen'
+__contact__ = 'locvnguy@gmail.com'
 
 import argparse
 import TaintTree
-import re
-from ete2 import Tree
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='TaintAnalyzer')
