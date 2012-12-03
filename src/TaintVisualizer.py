@@ -10,96 +10,60 @@ import matplotlib.pyplot as plt
 roottree = nx.DiGraph()
 
 class Node(object):
-  def __init__(self, initial):
-    pattern = re.compile(r"""
-                          \[(?P<uuid>\d+)\]
-                          (?P<type>(reg|mem))
-                          _(?P<name>\w+)
-                          \[(?P<byteindex>[\d:-]+)\]
-                          \[(?P<threadids>[\d:-]+)\]
-                          (\<-(?P<edgeann>.*))*
-                          """, re.VERBOSE)
-    m = pattern.search(initial)
-    self.uuid = m.group('uuid')
-    #print m.group('uuid')
-    self.typ = m.group('type') #Check to see if 'type' is a reserved word
-    self.name = m.group('name')
-    self.byte_in = m.group('byteindex')
-    self.threadids = m.group('threadids')
-    self.edgeann = m.group('edgeann')
+  def __init__(self, initial = None):
+    self.uuid=str(initial)
 
   def __str__(self):
     return self.uuid
 
-  def extract_data(s):
-    #>>> setup = ur"import re; regex =re.compile("\[(?P<uuid>\d+)\](?P<type>(reg|mem))_(?P<name ...
-    #>>> t = timeit.Timer('regex.search(string)',setup)
-    #>>> t.timeit(10000)
-    #0.0240871906281
-    #
+  def extract_data(self, s):
+    #Temporary solution is to parse a text file until we get the C struct passed in
     pattern = re.compile(r"""
                           \[(?P<uuid>\d+)\]
                           (?P<type>(reg|mem))
-                          _(?P<name>\w+)
-                          \[(?P<byteindex>[\d:-]+)\]
-                          \[(?P<threadids>[\d:-]+)\]
-                          (\<-(?P<edgeann>.*?))*
+                          _(?P<name>[\d\w_]+)
+                          \[(?P<startind>[\d\w:-]+)\]
+                          (\[(?P<endind>[\d\w:-]+)\])?
+                          (\<-(?P<edgeann>[\d\w\s%(),-]+))?
+                          ({D}(?P<child>[\d]+))?
                           """, re.VERBOSE)
     m = pattern.search(s)
+    print s
     self.uuid = m.group('uuid')
-    self.typ = m.group('typ')
+    #print m.group('uuid')
+    self.typ = m.group('type') #Check to see if 'type' is a reserved word
     self.name = m.group('name')
-    self.byte_in = m.group('byteindex')
-    self.threadids = m.group('threadids')
+    self.startind = m.group('startind')
+    self.endind = m.group('endind')
     self.edgeann = m.group('edgeann')
+    self.child = m.group('child')
 
-#
-# insert a node into a tree at the specific depth (tab) level
-# keep track of last inserted node so we can follow up its predecessor
-#
+def insert_node(data):
+  global roottree
+  tempNode = None
+  uuid = extract_uuid(data)
+  #Create new node and add to roottree
+  #Reimplment without exception
+  if roottree.has_node(uuid):
+    tempNode = roottree.node[uuid]['inode']
+    tempNode.extract_data(data)
+  else:
+    tempNode = Node()
+    tempNode.extract_data(data)
+    roottree.add_node(uuid, inode = tempNode)
+  if tempNode.child is not None:
+    for x in tempNode.child.split(' '):
+      newNode = Node(x)
+      roottree.add_node(x, inode = newNode)
+      #roottree.add_edge(tempNode, newNode, anno=tempNode.edgeann)
+      roottree.add_edge(str(tempNode), x, anno=tempNode.edgeann)
 
-class Inserter(object):
-  def __init__(self, node, depth = 0):
-    self.node = node
-    self.depth = depth
-    global roottree
-    roottree.add_node(node)
-    roottree.add_edge("ROOT", node)
-
-  def __call__(self, data, depth):
-    global rootree
-    newNode = Node(data)
-    if (depth > self.depth):
-      roottree.add_node(newNode)
-      if self.node.edgeann is not None:
-        roottree.add_edge(self.node, newNode, anno=self.node.edgeann)
-      else: 
-        roottree.add_edge(self.node, newNode)
-      self.depth = depth
-    elif(depth == self.depth):
-      roottree.add_node(newNode)
-      if self.node.edgeann is not None:
-        roottree.add_edge(roottree.predecessors(self.node)[0], newNode, anno=roottree.predecessors(self.node)[0].edgeann)
-      else: 
-        roottree.add_edge(roottree.predecessors(self.node)[0], newNode)
-      #self.node.parent.add(newNode)
-    else:
-      #print roottree.pred(self.node)
-      parent = roottree.predecessors(self.node)[0]
-      for i in range(0, self.depth - depth):
-        parent = roottree.predecessors(parent)[0]
-      roottree.add_node(newNode)
-      if parent.edgeann is not None:
-        roottree.add_edge(parent, newNode, anno=parent.edgeann)
-      else:
-        roottree.add_edge(parent, newNode)
-      self.depth = depth
-    self.node = newNode
-
-def print_tree(node, depth = 0):
-  print '%s%s' % (' ' * depth, node.uuid)
-  for child in node.children:
-    print_tree(child, depth + 1)
+def extract_uuid(s):
+  pattern = re.compile(r"""
+                        \[(?P<uuid>\d+)\].*
+                        """, re.VERBOSE)
+  m = pattern.search(s)
+  return str(m.group('uuid'))
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='TaintAnalyzer')
@@ -109,19 +73,12 @@ if __name__ == '__main__':
   args = vars(parser.parse_args())
   print args['taint']
   #global roottree
-  roottree.add_node("ROOT")
   f = open(args['taint'], 'r')
-  inserter = None
+  # Read input file line by line
   for line in f:
-    line = line.rstrip('\n')
-    depth = re.match('\t*', line).group(0).count('\t')
-    #New tree root
-    if(depth == 0):
-      tree = Node(line.rstrip('\n'))
-      inserter = Inserter(tree)
-    else:
-      nodedata = line[depth:]
-      inserter(nodedata, depth)
+    insert_node(line.rstrip('\n'))
+
+  ###Matplotlib###
   plt.title("taint_treex")
   pos = nx.spring_layout(roottree)
   ##nx.write_dot(roottree, 'test.dot')

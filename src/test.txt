@@ -1,0 +1,4 @@
+[59]reg_eip_0_0[0xd3:0]<-retl {D}48
+[48]mem_0x52fd14[0xa5:0]<-movb %dl, -0x8(%ebp,%ecx,1){D}47
+[47]reg_edx_0_0[0xa4:0]<-movb (%eax), %dl{D}13
+[13]mem_0x52fd30[-0x1:-1]
