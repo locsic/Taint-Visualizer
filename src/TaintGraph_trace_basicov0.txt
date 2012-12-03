@@ -1,0 +1,16 @@
+[59]reg_eip_0_0[0xd3:0]<-retl  {D}48 
+[48]mem_0x52fd14[0xa5:0]<-movb  %dl, -0x8(%ebp,%ecx,1){D}47 
+[47]reg_edx_0_0[0xa4:0][0xaa:0]<-movb  (%eax), %dl{D}13 
+[13]mem_0x52fd30[-0x1:-1]
+[60]reg_eip_1_0[0xd3:0]<-retl  {D}50 
+[50]mem_0x52fd15[0xb1:0]<-movb  %dl, -0x8(%ebp,%ecx,1){D}49 
+[49]reg_edx_0_0[0xb0:0][0xb6:0]<-movb  (%eax), %dl{D}14 
+[14]mem_0x52fd31[-0x1:-1]
+[61]reg_eip_2_0[0xd3:0]<-retl  {D}52 
+[52]mem_0x52fd16[0xbd:0]<-movb  %dl, -0x8(%ebp,%ecx,1){D}51 
+[51]reg_edx_0_0[0xbc:0][0xc2:0]<-movb  (%eax), %dl{D}15 
+[15]mem_0x52fd32[-0x1:-1]
+[62]reg_eip_3_0[0xd3:0]<-retl  {D}54 
+[54]mem_0x52fd17[0xc9:0]<-movb  %dl, -0x8(%ebp,%ecx,1){D}53 
+[53]reg_edx_0_0[0xc8:0][0xce:0]<-movb  (%eax), %dl{D}16 
+[16]mem_0x52fd33[-0x1:-1]

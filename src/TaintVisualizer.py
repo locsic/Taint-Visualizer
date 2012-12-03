@@ -16,6 +16,9 @@ class Node(object):
   def __str__(self):
     return self.uuid
 
+  def label(self):
+    return "%s%s_%s" % (self.uuid, self.typ, self.name)
+
   def extract_data(self, s):
     #Temporary solution is to parse a text file until we get the C struct passed in
     pattern = re.compile(r"""
@@ -53,10 +56,14 @@ def insert_node(data):
     roottree.add_node(uuid, inode = tempNode)
   if tempNode.child is not None:
     for x in tempNode.child.split(' '):
-      newNode = Node(x)
-      roottree.add_node(x, inode = newNode)
-      #roottree.add_edge(tempNode, newNode, anno=tempNode.edgeann)
-      roottree.add_edge(str(tempNode), x, anno=tempNode.edgeann)
+      #Check if child already exists
+      if roottree.has_node(x):
+          roottree.add_edge(str(tempNode), x, anno=tempNode.edgeann)
+      else: 
+          newNode = Node(x)
+          roottree.add_node(x, inode = newNode)
+          #roottree.add_edge(tempNode, newNode, anno=tempNode.edgeann)
+          roottree.add_edge(str(tempNode), x, anno=tempNode.edgeann)
 
 def extract_uuid(s):
   pattern = re.compile(r"""
@@ -79,28 +86,40 @@ if __name__ == '__main__':
     insert_node(line.rstrip('\n'))
 
   ###Matplotlib###
-  plt.title("taint_treex")
-  pos = nx.spring_layout(roottree)
-  ##nx.write_dot(roottree, 'test.dot')
+  plt.title(args['taint'])
+  plt.figure(figsize=(40,30))
+  #pos = nx.spring_layout(roottree)
+  nx.write_dot(roottree, 'test.dot')
   #nx.draw_networkx(roottree)
-  ##pos=nx.graphviz_layout(roottree,prog='dot')
-  ##pos=nx.graphviz_layout(roottree,prog='dot')
+  ##pos=nx.graphviz_layout(roottree,prog='dot', args='')
+  pos=nx.graphviz_layout(roottree,prog='dot', args='-Goverlap=false')
+  ##pos=nx.graphviz_layout(roottree,prog='fdp')
   ######NODES######
-  #nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='white')
-  #nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='blue', nodelist=[x for x in roottree.nodes()])
-  nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='blue', nodelist=[x for x in roottree.nodes() if roottree.node[x]['inode'].typ == 'reg'])
-  nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='green', nodelist=[x for x in roottree.nodes() if roottree.node[x]['inode'].typ == 'mem'])
-  #nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='blue', nodelist=[x for x in roottree.nodes()['inode if x.typ == 'reg'])
+  #node_labels=dict([(u,d['anno']) for u,d in roottree.edges(data=True)])
+  #roottree = nx.relabel_nodes(roottree, node_labels)
+  nx.draw_networkx_nodes(roottree, pos, node_shape='o', node_size=500, node_color='red', nodelist=[x for x in roottree.nodes() if roottree.node[x]['inode'].child is None])
+  nx.draw_networkx_nodes(roottree, pos, node_size=500, node_color='brown', nodelist=[x for x in roottree.nodes() if (roottree.node[x]['inode'].typ == 'reg' and roottree.node[x]['inode'].child is not None)])
+  nx.draw_networkx_nodes(roottree, pos, node_size=500, node_color='orange', nodelist=[x for x in roottree.nodes() if (roottree.node[x]['inode'].typ == 'mem' and roottree.node[x]['inode'].child is not None)])
+  #nx.draw_networkx_nodes(roottree, pos, node_size=500, node_color='orange', nodelist=[x for x in roottree.nodes() if roottree.node[x]['inode'].typ == 'mem'])
   ######EDGES######
-  nx.draw_networkx_edges(roottree, pos, width=6, alpha=0.5, edge_color='black')
-  ######LABELS######
-  nx.draw_networkx_labels(roottree, pos, font_size=10, font_family='sans-serif')
+  nx.draw_networkx_edges(roottree, pos, width=1, alpha=0.5, arrows=True, edge_color='black')
+  #nx.draw_networkx_edges(roottree, pos, width=8, alpha=0.5, arrows=True, edge_color='black')
+  ######NODE LABELS######
+  node_labels=dict([(u,d['inode'].label()) for u,d in roottree.nodes(data=True)])
+  offset = 22
+  pos_labels = {}
+  keys = pos.keys()
+  for key in keys:
+      x, y = pos[key]
+      pos_labels[key] = (x-offset, y)
+  nx.draw_networkx_labels(roottree, pos=pos_labels, labels=node_labels, font_size=14, font_family='sans-serif')
+  #nx.draw_networkx_labels(roottree, pos, font_size=6, font_family='sans-serif')
   ##nx.draw_networkx_nodes(roottree, pos=nx.spring_layout(roottree), node_size=1200, node_shape='o', node_color='0.75')
   ##nx.draw_networkx_edges(roottree, pos=nx.spring_layout(roottree), width=2, edge_color='b')
   ##nx.draw_networkx_labels(roottree, pos=nx.spring_layout(roottree), fontsize=2, labelloc='c')
-  ###labels = dict((n,d['anno']) for n,d in roottree.nodes(data=True))
   ###print labels
-  nx.draw_networkx_edge_labels(roottree, pos, font_size=6, labelloc='c')
+  edge_labels=dict([((u,v),d['anno']) for u,v,d in roottree.edges(data=True)])
+  nx.draw_networkx_edge_labels(roottree, pos, label_pos=.5, font_size=11, edge_labels=edge_labels, rotate=False)
   ##nx.draw(roottree,pos=nx.spring_layout(roottree),labels=True, arrows=False)
   plt.axis('off')
   plt.savefig('taint_tree.png')
