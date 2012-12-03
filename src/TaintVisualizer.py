@@ -86,7 +86,11 @@ if __name__ == '__main__':
   ##pos=nx.graphviz_layout(roottree,prog='dot')
   ##pos=nx.graphviz_layout(roottree,prog='dot')
   ######NODES######
-  nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='white')
+  #nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='white')
+  #nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='blue', nodelist=[x for x in roottree.nodes()])
+  nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='blue', nodelist=[x for x in roottree.nodes() if roottree.node[x]['inode'].typ == 'reg'])
+  nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='green', nodelist=[x for x in roottree.nodes() if roottree.node[x]['inode'].typ == 'mem'])
+  #nx.draw_networkx_nodes(roottree, pos, node_size=3000, node_color='blue', nodelist=[x for x in roottree.nodes()['inode if x.typ == 'reg'])
   ######EDGES######
   nx.draw_networkx_edges(roottree, pos, width=6, alpha=0.5, edge_color='black')
   ######LABELS######
