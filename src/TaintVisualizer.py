@@ -29,7 +29,8 @@ class Node(object):
                           \[(?P<startind>[\d\w:-]+)\]
                           (\[(?P<endind>[\d\w:-]+)\])?
                           (\<-(?P<edgeann>[\d\w\s%(),-]+))?
-                          ({D}(?P<child>[\d\s]+))?
+                          ({D}(?P<child_d>[\d\s]+))?
+                          ({C}(?P<child_c>[\d\s]+))?
                           """, re.VERBOSE)
     m = pattern.search(s)
     self.uuid = m.group('uuid')
@@ -39,7 +40,8 @@ class Node(object):
     self.startind = m.group('startind')
     self.endind = m.group('endind')
     self.edgeann = m.group('edgeann')
-    self.child = m.group('child')
+    self.child_c = m.group('child_c')
+    self.child_d = m.group('child_d')
 
 def insert_node(data):
   global roottree
@@ -54,18 +56,22 @@ def insert_node(data):
     tempNode = Node()
     tempNode.extract_data(data)
     roottree.add_node(uuid, inode = tempNode)
-  if tempNode.child is not None:
-    print tempNode.child
-    for x in tempNode.child.split():
-      print x
-      #Check if child already exists
-      if roottree.has_node(x):
-          roottree.add_edge(str(tempNode), x, anno=tempNode.edgeann)
-      else: 
-          newNode = Node(x)
-          roottree.add_node(x, inode = newNode)
-          #roottree.add_edge(tempNode, newNode, anno=tempNode.edgeann)
-          roottree.add_edge(str(tempNode), x, anno=tempNode.edgeann)
+  #Data Children
+  child_edges(tempNode)
+
+def child_edges(node):
+  global roottree
+  for attr, value in node.__dict__.iteritems():
+      if(attr.startswith('child')):
+          x = getattr(node, attr)
+          if x is not None:
+              for child in x.split():
+                  if roottree.has_node(child):
+                      roottree.add_edge(str(node), child, anno=node.edgeann, edgetype=attr.split('_')[1])
+                  else:
+                      newNode = Node(child)
+                      roottree.add_node(child, inode = newNode)
+                      roottree.add_edge(str(node), child, anno=node.edgeann, edgetype=attr.split('_')[1])
 
 def extract_uuid(s):
   pattern = re.compile(r"""
@@ -73,6 +79,13 @@ def extract_uuid(s):
                         """, re.VERBOSE)
   m = pattern.search(s)
   return str(m.group('uuid'))
+
+def edge_color():
+  global roottree
+  colors = []
+  for edge,data in roottree.edges_iter(data=True):
+      return 'red' if data['edgetype'] == 'c' else 'blue'
+  return colors
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='TaintAnalyzer')
@@ -100,17 +113,18 @@ if __name__ == '__main__':
   ######NODES######
   #node_labels=dict([(u,d['anno']) for u,d in roottree.edges(data=True)])
   #roottree = nx.relabel_nodes(roottree, node_labels)
-  #nx.draw_networkx_nodes(roottree, pos, node_shape='o', node_size=500, node_color='red', nodelist=[x for x in roottree.nodes() if roottree.node[x]['inode'].child is None])
+  #nx.draw_networkx_nodes(roottree, pos, node_shape='o', node_size=500, node_color='red', nodelist=[x for x in roottree.nodes() if roottree.node[x]['inode'].child_d is None])
   nx.draw_networkx_nodes(roottree, pos, node_shape='o', node_size=500, node_color='red', alpha=.5, nodelist=[x for x in roottree.nodes() if not roottree.successors(x)])
-  #nx.draw_networkx_nodes(roottree, pos, node_size=500, node_color='brown', nodelist=[x for x in roottree.nodes() if (roottree.node[x]['inode'].typ == 'reg' and roottree.node[x]['inode'].child is not None)])
+  #nx.draw_networkx_nodes(roottree, pos, node_size=500, node_color='brown', nodelist=[x for x in roottree.nodes() if (roottree.node[x]['inode'].typ == 'reg' and roottree.node[x]['inode'].child_d is not None)])
   nx.draw_networkx_nodes(roottree, pos, node_size=500, node_color='purple', nodelist=[x for x in roottree.nodes() if (roottree.node[x]['inode'].typ == 'reg' and roottree.successors(x))])
-  #nx.draw_networkx_nodes(roottree, pos, node_size=500, node_color='orange', nodelist=[x for x in roottree.nodes() if (roottree.node[x]['inode'].typ == 'mem' and roottree.node[x]['inode'].child is not None)])
+  #nx.draw_networkx_nodes(roottree, pos, node_size=500, node_color='orange', nodelist=[x for x in roottree.nodes() if (roottree.node[x]['inode'].typ == 'mem' and roottree.node[x]['inode'].child_d is not None)])
   nx.draw_networkx_nodes(roottree, pos, node_size=500, node_color='orange', nodelist=[x for x in roottree.nodes() if (roottree.node[x]['inode'].typ == 'mem' and roottree.successors(x))])
   #nx.draw_networkx_nodes(roottree, pos, node_size=500, node_color='orange', nodelist=[x for x in roottree.nodes() if roottree.node[x]['inode'].typ == 'mem'])
   nx.draw_networkx_nodes(roottree, pos, node_shape='o', node_size=500, node_color='red', nodelist=[x for x in roottree.nodes() if not roottree.predecessors(x)])
   ######EDGES######
-  nx.draw_networkx_edges(roottree, pos, width=1, alpha=0.5, arrows=True, edge_color='black')
-  #nx.draw_networkx_edges(roottree, pos, width=8, alpha=0.5, arrows=True, edge_color='black')
+  #edge_c=dict([((u,v),d['edgetype']) for u,v,d in roottree.edges(data=True)])
+  nx.draw_networkx_edges(roottree, pos, width=1, alpha=0.6, arrows=True, edge_color='red', style='dashed', edgelist=[(x,y) for x,y,d in roottree.edges(data=True) if (d['edgetype'] == 'c')])
+  nx.draw_networkx_edges(roottree, pos, width=1, alpha=0.5, arrows=True, edge_color='black', edgelist=[(x,y) for x,y,d in roottree.edges(data=True) if (d['edgetype'] == 'd')])
   ######NODE LABELS######
   node_labels=dict([(u,d['inode'].label()) for u,d in roottree.nodes(data=True)])
   offset = 13

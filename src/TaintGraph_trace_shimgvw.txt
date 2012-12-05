@@ -1,0 +1,36 @@
+[2000]mem_0xa8b3c[0xc649:0]<-rep movsdl  (%esi), (%edi){D}1837 {C}1964 1965 1966 1967 
+[1965]reg_ecx_1_0[0xc63d:0][0xc653:0]<-movl  0x10(%ebp), %ecx{D}1940 
+[1964]reg_ecx_0_0[0xc63d:0][0xc653:0]<-movl  0x10(%ebp), %ecx{D}1939 
+[1837]mem_0xa87ac[0xb1bc:0][0xce53:0]<-rep movsdl  (%esi), (%edi){D}29 
+[1966]reg_ecx_2_0[0xc63d:0][0xc653:0]<-movl  0x10(%ebp), %ecx{D}1941 
+[1967]reg_ecx_3_0[0xc63d:0][0xc653:0]<-movl  0x10(%ebp), %ecx{D}1942 
+[1939]mem_0xb4fc08[0xbe06:0][0xc690:0]<-movl  %eax, 0x10(%ebp){D}1927 
+[1940]mem_0xb4fc09[0xbe06:0][0xc690:0]<-movl  %eax, 0x10(%ebp){D}1928 
+[1941]mem_0xb4fc0a[0xbe06:0][0xc690:0]<-movl  %eax, 0x10(%ebp){D}1929 
+[1942]mem_0xb4fc0b[0xbe06:0][0xc690:0]<-movl  %eax, 0x10(%ebp){D}1930 
+[29]mem_0xa74e4[-0x1:-1]
+[1927]reg_eax_0_0[0xbe03:0][0xbe0e:0]<-add %eax, %eax{D}1919 1920 1921 1922 
+[1920]reg_eax_1_0[0xbdf7:0]<-movl  0x6(%edi), %eax{D}1816 
+[1921]reg_eax_2_0[0xbdf7:0]<-movl  0x6(%edi), %eax{D}1817 
+[1922]reg_eax_3_0[0xbdf7:0]<-movl  0x6(%edi), %eax{D}1818 
+[1928]reg_eax_1_0[0xbe03:0][0xbe0e:0]<-add %eax, %eax{D}1927 1920 1921 1922 
+[1929]reg_eax_2_0[0xbe03:0][0xbe0e:0]<-add %eax, %eax{D}1927 1928 1921 1922 
+[1930]reg_eax_3_0[0xbe03:0][0xbe0e:0]<-add %eax, %eax{D}1927 1928 1929 1922 
+[1816]mem_0xa8797[0xb1b6:0][0xce83:0]<-rep movsdl  (%esi), (%edi){D}8 
+[1817]mem_0xa8798[0xb1b7:0][0xce4e:0]<-rep movsdl  (%esi), (%edi){D}9 
+[1818]mem_0xa8799[0xb1b7:0][0xce4e:0]<-rep movsdl  (%esi), (%edi){D}10 
+[8]mem_0xa74cf[-0x1:-1]
+[9]mem_0xa74d0[-0x1:-1]
+[1919]reg_eax_0_0[0xbdf7:0]<-movl  0x6(%edi), %eax{D}1815 
+[10]mem_0xa74d1[-0x1:-1]
+[1815]mem_0xa8796[0xb1b6:0][0xce83:0]<-rep movsdl  (%esi), (%edi){D}7 
+[7]mem_0xa74ce[-0x1:-1]
+[2001]mem_0xa8b3d[0xc649:0]<-rep movsdl  (%esi), (%edi){D}1838 {C}1964 1965 1966 1967 
+[1838]mem_0xa87ad[0xb1bc:0][0xce53:0]<-rep movsdl  (%esi), (%edi){D}30 
+[30]mem_0xa74e5[-0x1:-1]
+[2002]mem_0xa8b3e[0xc649:0]<-rep movsdl  (%esi), (%edi){D}1839 {C}1964 1965 1966 1967 
+[1839]mem_0xa87ae[0xb1bc:0][0xce53:0]<-rep movsdl  (%esi), (%edi){D}31 
+[31]mem_0xa74e6[-0x1:-1]
+[2003]mem_0xa8b3f[0xc649:0]<-rep movsdl  (%esi), (%edi){D}1840 {C}1964 1965 1966 1967 
+[1840]mem_0xa87af[0xb1bc:0][0xce53:0]<-rep movsdl  (%esi), (%edi){D}32 
+[32]mem_0xa74e7[-0x1:-1]
